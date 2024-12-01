@@ -3,7 +3,6 @@
 read -p "Task number: " num
 name="day$num"
 mkdir $name
+cp ./main.go $name/main.go
 cd $name
-touch main.go
-echo $'package main\n\nfunc main() {\n}' >main.go
 go mod init $name
