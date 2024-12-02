@@ -12,13 +12,58 @@ import (
 func main() {
 	input := read()
 	zad1(input)
+	zad2(input)
+}
+func zad2(arr []string) {
+	safeConut := 0
+	for _, report := range arr {
+		lvls := strings.Split(report, " ")
+		success, index := checkLvls(lvls)
+		if success {
+			safeConut++
+			continue
+		}
+		if tryCleen(lvls, index) {
+			safeConut++
+		}
+	}
+	println("Safe reports 2: ")
+	println(safeConut)
+}
+
+func remove(slice []string, s int) []string {
+	sliceCopy := make([]string, len(slice))
+	copy(sliceCopy, slice)
+	if s == 0 {
+		return append(sliceCopy[s+1:])
+	}
+	return append(sliceCopy[:s], sliceCopy[s+1:]...)
+}
+
+func tryCleen(arr []string, index int) bool {
+	success := false
+	for i := 0; i < len(arr); i++ {
+		fmt.Printf("Removing element %d\n", i)
+		redact := remove(arr, i)
+		printReport(redact)
+		s, _ := checkLvls(redact)
+		success = success || s
+	}
+
+	if !success {
+		printReport(arr)
+		fmt.Println("Failed cleaning")
+	}
+
+	return success
 }
 
 func zad1(arr []string) {
 	safeConut := 0
 	for _, report := range arr {
 		lvls := strings.Split(report, " ")
-		if checkLvls(lvls) {
+		success, _ := checkLvls(lvls)
+		if success {
 			safeConut++
 		}
 	}
@@ -26,12 +71,16 @@ func zad1(arr []string) {
 	println(safeConut)
 }
 
-func checkLvls(arr []string) bool {
+func printReport(arr []string) {
 	fmt.Print("Report: ")
 	for _, v := range arr {
 		fmt.Printf("%s ", v)
 	}
 	fmt.Println()
+
+}
+
+func checkLvls(arr []string) (bool, int) {
 
 	last, _ := strconv.Atoi(arr[0])
 	second, _ := strconv.Atoi(arr[1])
@@ -45,18 +94,20 @@ func checkLvls(arr []string) bool {
 			panic(err)
 		}
 		if num > last == asc {
-			fmt.Printf("Report unsafe becouse of uneaveness \n")
-			return false
+			//printReport(arr)
+			//fmt.Printf("Report unsafe becouse of uneaveness \n")
+			return false, i
 		}
 
 		diff := abs(num - last)
 		if diff > 3 || diff < 1 {
-			fmt.Printf("Report unsafe becouse of step %d \n", diff)
-			return false
+			//printReport(arr)
+			//fmt.Printf("Report unsafe becouse of step %d \n", diff)
+			return false, i
 		}
 		last = num
 	}
-	return true
+	return true, -1
 }
 
 func abs(num int) int {
