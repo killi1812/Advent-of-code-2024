@@ -63,13 +63,13 @@ var vertical = [3][2]int{{-1, 0}, {0, 0}, {1, 0}}   // Vertical "MAS"
 var diagonal1 = [3][2]int{{-1, -1}, {0, 0}, {1, 1}} // Diagonal "\" "MAS"
 var diagonal2 = [3][2]int{{-1, 1}, {0, 0}, {1, -1}} // Diagonal "/" "MAS"
 
-func isMAS(grid [][]rune, startRow, startCol int, offsets [3][2]int) bool {
+func isMAS(grid [][]rune, startRow, startCol int, offsets [3][2]int, word string) bool {
 	rows := len(grid)
 	cols := len(grid[0])
 
 	for i, offset := range offsets {
 		r, c := startRow+offset[0], startCol+offset[1]
-		if r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] != rune("MAS"[i]) {
+		if r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] != rune(word[i]) {
 			return false
 		}
 	}
@@ -87,7 +87,7 @@ func findXMAS(grid [][]rune) [][2]int {
 			// Check if the center is 'A'
 			if grid[row][col] == 'A' {
 				// Check vertical and both diagonal MAS sequences
-				if isMAS(grid, row, col, vertical) || isMAS(grid, row, col, diagonal1) || isMAS(grid, row, col, diagonal2) {
+				if (isMAS(grid, row, col, diagonal1, "MAS") && isMAS(grid, row, col, diagonal2, "MAS")) || (isMAS(grid, row, col, diagonal1, "SAM") && isMAS(grid, row, col, diagonal2, "SAM")) || (isMAS(grid, row, col, diagonal1, "MAS") && isMAS(grid, row, col, diagonal2, "SAM")) || (isMAS(grid, row, col, diagonal1, "SAM") && isMAS(grid, row, col, diagonal2, "MAS")) {
 					results = append(results, [2]int{row, col})
 				}
 			}
