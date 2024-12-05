@@ -87,7 +87,7 @@ func findXMAS(grid [][]rune) [][2]int {
 			// Check if the center is 'A'
 			if grid[row][col] == 'A' {
 				// Check vertical and both diagonal MAS sequences
-				if isMAS(grid, row, col, vertical) && isMAS(grid, row, col, diagonal1) && isMAS(grid, row, col, diagonal2) {
+				if isMAS(grid, row, col, vertical) || isMAS(grid, row, col, diagonal1) || isMAS(grid, row, col, diagonal2) {
 					results = append(results, [2]int{row, col})
 				}
 			}
