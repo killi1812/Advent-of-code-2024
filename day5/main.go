@@ -29,7 +29,7 @@ func order(updates [][]int, rules []Rule) [][]int {
 	for _, v := range updates {
 		tmp := make([]int, len(v))
 		copy(tmp, v)
-		sort(v, rules)
+		tmp = sort(v, rules)
 		fmt.Printf("v: %v\n", tmp)
 		if isValid(tmp, rules) {
 			valid = append(valid, tmp)
@@ -39,8 +39,29 @@ func order(updates [][]int, rules []Rule) [][]int {
 }
 
 func sort(arr []int, rules []Rule) []int {
+	tmp := []int{}
 
-	return arr
+	for i := 0; i < len(arr); i++ {
+		tmp = append(tmp, arr[i])
+		move(tmp, rules)
+	}
+	return tmp
+}
+
+func move(arr []int, rules []Rule) {
+	size := len(arr)
+	if size <= 1 {
+		return
+	}
+	vrules := filterRules(arr[size-1], rules)
+	for _, v := range vrules {
+		if arr[size-2] == v.Y {
+			tmp := arr[size-1]
+			arr[size-1] = arr[size-2]
+			arr[size-2] = tmp
+		}
+	}
+	move(arr[:size-1], rules)
 }
 
 func same(l1 []int, l2 []int) bool {
