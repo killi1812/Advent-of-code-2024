@@ -22,17 +22,20 @@ func main() {
 	}
 
 	walk(pmap)
-	printArr(pmap)
-	rez1 := count(pmap)
+	//printArr(pmap)
+	rez1 := count(pmap, passed)
 	rez1++
 	fmt.Printf("rez1: \n%v\n", rez1)
+
+	count(pmap, newObsticle)
+	fmt.Printf("rez1: \n%v\n", countRout)
 }
 
-func count(arr [][]rune) int {
+func count(arr [][]rune, obj rune) int {
 	sum := 0
 	for _, row := range arr {
 		for _, char := range row {
-			if char == passed {
+			if char == obj {
 				sum++
 			}
 		}
@@ -75,15 +78,12 @@ func walk(arr [][]rune) {
 }
 
 func rotate(arr [][]rune, playerLocation location) {
-	fmt.Printf("playerLocation: %v\n", playerLocation)
 	pchar := arr[playerLocation.Y][playerLocation.X]
 	csprite := slices.Index(playerSprite, rune(pchar))
 	csprite++
 	if csprite >= len(playerSprite) {
 		csprite = 0
 	}
-	fmt.Printf("csprite: %v\n", csprite)
-	fmt.Printf("pchar: %v\n", pchar)
 
 	arr[playerLocation.Y][playerLocation.X] = rune(playerSprite[csprite])
 }
@@ -110,22 +110,89 @@ func forward(arr [][]rune, bounds location, plocation *location) int {
 	return cont
 }
 
-const object = '#'
+const obsticle = '#'
 const passed = 'X'
+const newObsticle = 'O'
 
 var up = [2]int{0, 1}
 var left = [2]int{-1, 0}
 var down = [2]int{0, -1}
 var right = [2]int{1, 0}
+var countRout = 0
 
-func goDirection(arr [][]rune, bounds location, plocation *location, direction [2]int) int {
-	fmt.Printf("bounds: %v\n", bounds)
+func nextDirection(direction [2]int) [2]int {
+	switch direction {
+	case up:
+		return left
+
+	case left:
+		return down
+	case down:
+		return right
+	case right:
+		return up
+	}
+	return direction
+}
+
+func checkNext(arr [][]rune, bounds, plocation location, direction [2]int) int {
 	if plocation.Y-direction[1] == -1 || plocation.Y-direction[1] == bounds.Y || plocation.X-direction[0] == -1 || plocation.X-direction[0] == bounds.X {
 		return -1
 	}
 
-	if arr[plocation.Y-direction[1]][plocation.X-direction[0]] == object {
+	if arr[plocation.Y-direction[1]][plocation.X-direction[0]] == obsticle {
+		return 2
+	}
+
+	if arr[plocation.Y-direction[1]][plocation.X-direction[0]] == passed {
+		return 1
+	}
+
+	return 0
+}
+
+// -1 out
+// 0 nothing
+// 1 passed
+// 2 obsticle
+
+func checkDirection(arr [][]rune, bounds, plocation location, direction [2]int) bool {
+	val := -1
+	loc := location{
+		X: plocation.X,
+		Y: plocation.Y,
+	}
+	for {
+		loc.X = loc.X - direction[0]
+		loc.Y = loc.Y - direction[1]
+		old := val
+		val = checkNext(arr, bounds, loc, direction)
+		if val == -1 {
+			return false
+		}
+		//TODO mora zavrsavati s XXX#
+		if val == 2 && (old == 1 || old == -1) {
+			break
+		}
+	}
+	fmt.Printf("Found direction %v, \n", loc)
+	printArr(arr)
+	return true
+}
+
+func goDirection(arr [][]rune, bounds location, plocation *location, direction [2]int) int {
+	if plocation.Y-direction[1] == -1 || plocation.Y-direction[1] == bounds.Y || plocation.X-direction[0] == -1 || plocation.X-direction[0] == bounds.X {
+		return -1
+	}
+	if arr[plocation.Y-direction[1]][plocation.X-direction[0]] == obsticle {
 		return 0
+	}
+
+	//TODO check for circular path must be x and end with #
+	// and place a new object if true
+	if checkDirection(arr, bounds, *plocation, nextDirection(direction)) {
+		countRout++
+		//arr[plocation.Y-direction[1]][plocation.X-direction[0]] = newObsticle
 	}
 
 	tmp := arr[plocation.Y][plocation.X]
@@ -134,8 +201,6 @@ func goDirection(arr [][]rune, bounds location, plocation *location, direction [
 	plocation.X -= direction[0]
 	plocation.Y -= direction[1]
 	arr[plocation.Y][plocation.X] = tmp
-
-	fmt.Printf("plocation: %v\n", plocation)
 
 	return 1
 }
