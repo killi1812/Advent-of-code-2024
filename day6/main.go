@@ -206,7 +206,6 @@ func goDirection(arr [][]rune, bounds location, plocation *location, direction [
 }
 
 func printArr(arr [][]rune) {
-
 	for _, row := range arr {
 		for _, char := range row {
 			fmt.Print(string(char))

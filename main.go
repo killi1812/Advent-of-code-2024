@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"log"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -12,25 +10,10 @@ func main() {
 }
 
 func read() []string {
-	fmt.Println("input text:")
-	scanner := bufio.NewScanner(os.Stdin)
-
-	var input []string
-	for {
-		scanner.Scan()
-		line := scanner.Text()
-		if len(line) == 0 {
-			break
-		}
-		input = append(input, line)
-	}
-
-	err := scanner.Err()
+	name := "input"
+	data, err := os.ReadFile(name)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-
-	fmt.Println("Done reading")
-
-	return input
+	return strings.Split(string(data), "\n")
 }
