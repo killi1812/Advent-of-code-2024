@@ -158,28 +158,34 @@ var hiddenCount = map[cords]int{}
 func zad01(arr []antennasPair, m *mapa) {
 	for _, pair := range arr {
 		diff := diffParis(pair)
-		a, b := pair.first.subtract(diff), pair.second.add(diff)
-		if tmp, err := m.at(a); err == nil {
+		a, b := pair.first.add(diff), pair.second.add(diff)
+
+		for {
+			tmp, err := m.at(a)
+			//fmt.Printf("new loc %v\n",a)
+			if err != nil {
+				break
+			}
 			if tmp == empty {
 				m.change(antinode, a)
 			} else if tmp != antinode {
 				hiddenCount[a]++
 			}
-		} else {
-			//fmt.Printf("pair: %v\n", pair)
-			//fmt.Printf("a: %v\n", a)
+			a = a.subtract(diff)
 		}
-		if tmp, err := m.at(b); err == nil {
+
+		for {
+			tmp, err := m.at(b)
+			if err != nil {
+				break
+			}
 			if tmp == empty {
 				m.change(antinode, b)
 			} else if tmp != antinode {
-				hiddenCount[a]++
+				hiddenCount[b]++
 			}
-		} else {
-			//fmt.Printf("pair: %v\n", pair)
-			//fmt.Printf("b: %v\n", b)
+			b = b.add(diff)
 		}
-
 	}
 }
 
