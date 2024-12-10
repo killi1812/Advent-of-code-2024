@@ -100,9 +100,11 @@ func (this HikeMap) nextSteap(poz, dir cords) *cords {
 	tmp := poz.add(dir)
 	rn, _ := this.at(tmp)
 	br := rtoi(rn)
-	if br+1 != height {
+	//fmt.Printf("height %v, tmp %v, rn %v\n", height, tmp, br)
+	if br != height+1 {
 		return nil
 	}
+	fmt.Printf("next step to %v: %v\n", tmp, br)
 	return &tmp
 }
 
@@ -113,6 +115,7 @@ func rtoi(char rune) int {
 type path struct {
 	start  cords
 	end    cords
+	steaps []cords
 	length int
 }
 
@@ -131,12 +134,33 @@ func (this path) comp(other path) int {
 	return 0
 }
 
+func findPaths(m HikeMap) []path {
+	paths := []path{}
+	for _, path := range m.starts {
+		fmt.Printf("path: %v\n", path)
+		moveNext(m, path)
+	}
+	return paths
+}
+
+func moveNext(m HikeMap, loc cords) {
+	for _, dir := range directions {
+		newLoc := m.nextSteap(loc, dir)
+		if newLoc == nil {
+			continue
+		}
+		m.nextSteap(*newLoc, dir)
+	}
+	return
+}
+
 func main() {
 	input := read()
 	mp := newHikeMap(stringsToRunes(input))
 	mp.printMap()
 	mp.starts = mp.findStarts()
 	mp.ends = mp.findEnds()
+	findPaths(*mp)
 	fmt.Printf("mp.starts: %v\n", mp.starts)
 	fmt.Printf("mp.ends: %v\n", mp.ends)
 }

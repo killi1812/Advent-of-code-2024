@@ -150,10 +150,10 @@ func main() {
 	zad01(pairs, m)
 	m.printMap()
 	fmt.Printf("overlapCount: %v\n", hiddenCount)
-	fmt.Printf("Count of antinodes is: %d\n", m.count(antinode)+hiddenCount)
+	fmt.Printf("Count of antinodes is: %d\n", m.count(antinode)+len(hiddenCount))
 }
 
-var hiddenCount = 0
+var hiddenCount = map[cords]int{}
 
 func zad01(arr []antennasPair, m *mapa) {
 	for _, pair := range arr {
@@ -163,22 +163,21 @@ func zad01(arr []antennasPair, m *mapa) {
 			if tmp == empty {
 				m.change(antinode, a)
 			} else if tmp != antinode {
-				hiddenCount++
+				hiddenCount[a]++
 			}
 		} else {
-			fmt.Printf("pair: %v\n", pair)
-			fmt.Printf("a: %v\n", a)
+			//fmt.Printf("pair: %v\n", pair)
+			//fmt.Printf("a: %v\n", a)
 		}
 		if tmp, err := m.at(b); err == nil {
 			if tmp == empty {
 				m.change(antinode, b)
 			} else if tmp != antinode {
-
-				hiddenCount++
+				hiddenCount[a]++
 			}
 		} else {
-			fmt.Printf("pair: %v\n", pair)
-			fmt.Printf("b: %v\n", b)
+			//fmt.Printf("pair: %v\n", pair)
+			//fmt.Printf("b: %v\n", b)
 		}
 
 	}
